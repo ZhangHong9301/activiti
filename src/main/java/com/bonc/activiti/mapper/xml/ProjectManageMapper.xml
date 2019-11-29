@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.activiti.mapper.ProjectManageMapper">
+
+    <insert id="addProject" parameterType="java.util.List">
+        insert into AUD_PROJECT_FINAL_ACCOUNT
+        ( id,project_year,project_no,project_name,project_type,company_no,company_name ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.projectYear},
+            #{item.projectNo}, #{item.projectName}, #{item.projectType},
+            #{item.companyNo},#{item.companyName} )
+        </foreach>
+    </insert>
+
+    <select id="selectProject" resultType="java.util.Map">
+        select * from AUD_PROJECT_FINAL_ACCOUNT
+    </select>
+
+</mapper>
