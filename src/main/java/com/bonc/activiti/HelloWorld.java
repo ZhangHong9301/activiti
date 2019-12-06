@@ -97,7 +97,11 @@ public class HelloWorld {
 
         String deploymentId = deployment.getId();
 
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).singleResult();
+        ProcessDefinition processDefinition =
+                repositoryService.createProcessDefinitionQuery()  //创建一个流程定义的查询
+                        /*指定查询条件，where条件*/
+                        .deploymentId(deploymentId) //使用部署对象id查询
+                        .singleResult();    /*返回唯一结果集*/
         LOGGER.info("流程定义文件{}，流程ID{}", processDefinition.getName(), processDefinition.getId());
         return processDefinition;
     }

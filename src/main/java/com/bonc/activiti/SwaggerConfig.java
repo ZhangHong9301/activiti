@@ -13,7 +13,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-@ComponentScan(basePackages = {"com.bonc.activiti.controller"})
+@ComponentScan(basePackages = {"com.bonc.activiti.web.controller"})
 public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
@@ -28,7 +28,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.bonc.activiti.controller")) //这里写的是API接口所在的包位置
+                .apis(RequestHandlerSelectors.basePackage("com.bonc.activiti.web.controller")) //这里写的是API接口所在的包位置
                 .paths(PathSelectors.any())
                 .build();
     }

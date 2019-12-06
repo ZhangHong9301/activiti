@@ -6,10 +6,7 @@ import com.bonc.activiti.service.ProjectManageService;
 import com.bonc.activiti.util.UUIDUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +18,10 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class ProjectManageServiceImpl implements ProjectManageService {
@@ -81,15 +80,29 @@ public class ProjectManageServiceImpl implements ProjectManageService {
             if (row == null) {
                 continue;
             }
+            int spanNum = r + 1;
             information = new AudFinalAccount();
             information.setId(UUIDUtil.createUUID());
+            logger.info("实际列数 [{}]", row.getPhysicalNumberOfCells());
             for (int i = 0; i < row.getPhysicalNumberOfCells(); i++) {
-                String temp = getCellVal(row.getCell(i)).toString().trim();
+                Object cellVal = getCellVal(row.getCell(i));
+                String temp;
+                if (null == cellVal) {
+                    temp = null;
+                } else {
+                    temp = cellVal.toString().trim();
+                }
                 for (int j = 0; j < resultCell.length; j++) {
                     if (i == resultCell[j]) {
                         switch (i) {
                             case 0:
                                 information.setProjectYear(temp);
+                                if (information.getProjectYear() == null || information.getProjectYear().isEmpty()) {
+                                    throw new RuntimeException("第" + spanNum + "行项目年份不能为空");
+                                }
+                                if (!Pattern.matches("^[2-9]\\d{3}$",information.getProjectYear())) {
+                                    throw new RuntimeException("第" + spanNum + "行项目年份数据不符合规范");
+                                }
                                 break;
                             case 1:
                                 information.setProjectNo(temp);
@@ -99,6 +112,10 @@ public class ProjectManageServiceImpl implements ProjectManageService {
                                 break;
                             case 3:
                                 information.setProjectType(temp);
+                                if (information.getProjectType() == null || information.getProjectType().isEmpty()) {
+                                    throw new RuntimeException("第" + spanNum + "行项目类型不能为空");
+                                }
+
                                 break;
                             case 4:
                                 information.setCompanyNo(temp);
@@ -121,7 +138,12 @@ public class ProjectManageServiceImpl implements ProjectManageService {
 
     public Object getCellVal(Cell cell) {
         Object obj = null;
-        switch (cell.getCellTypeEnum()) {
+        // 如果列为空，则返回空
+        if (cell == null) {
+            return obj;
+        }
+        logger.info("========== [{}]", cell.getColumnIndex());
+        switch (cell.getCellType()) {
             case BOOLEAN:
                 obj = cell.getBooleanCellValue();
                 break;
@@ -129,7 +151,13 @@ public class ProjectManageServiceImpl implements ProjectManageService {
                 obj = cell.getErrorCellValue();
                 break;
             case NUMERIC:
-                obj = cell.getNumericCellValue();
+                if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+                    obj = sdf.format(org.apache.poi.ss.usermodel.DateUtil.getJavaDate(cell.getNumericCellValue())).toString();
+                } else {
+                    DataFormatter dataFormatter = new DataFormatter();
+                    obj = dataFormatter.formatCellValue(cell);
+                }
                 break;
             case STRING:
                 obj = cell.getStringCellValue();
@@ -140,7 +168,7 @@ public class ProjectManageServiceImpl implements ProjectManageService {
         return obj;
     }
 
-    @Autowired
+    @Override
     public Object getProject() throws JsonProcessingException {
 //        return projectManageMapper.selectProject();
         return "";
