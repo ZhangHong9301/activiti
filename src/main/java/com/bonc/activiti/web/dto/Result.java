@@ -1,6 +1,9 @@
 package com.bonc.activiti.web.dto;
 
 import com.bonc.activiti.service.enums.ResponseEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,7 @@ public class Result implements Serializable {
         return new Result(msg);
     }
 
-    public static Result fail(ResponseEnum enums,Object data) {
+    public static Result fail(ResponseEnum enums, Object data) {
         Result result = new Result(enums);
         result.setData(data);
         return result;

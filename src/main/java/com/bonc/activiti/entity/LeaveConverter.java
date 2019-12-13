@@ -2,16 +2,17 @@ package com.bonc.activiti.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.activiti.engine.task.Task;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  * @Description:
  * @Author: ZhangHong
- * @Date: 2019-12-06 16:27
+ * @Date: 2019-12-09 15:21
  */
 @Data
-public class LeaveInfo {
+public class LeaveConverter {
 
     @ApiModelProperty(value = "主键")
     private String id;
@@ -19,7 +20,7 @@ public class LeaveInfo {
     @ApiModelProperty(value = "用户id")
     private String userId;
 
-    @ApiModelProperty(value = "流程实例id")
+    @ApiModelProperty(value = "流程id")
     private String instanceId;
 
     @ApiModelProperty(value = "开始日期")
@@ -31,15 +32,5 @@ public class LeaveInfo {
     @ApiModelProperty(value = "请假原由")
     private String reason;
 
-    @ApiModelProperty("任务id")
-    String taskId;
-
-    @ApiModelProperty("任务名")
-    String taskName;
-
-    @ApiModelProperty("流程定义id")
-    String processDefId;
-
-    @ApiModelProperty("任务创建时间")
-    Date taskCreateTime;
+    Task task;
 }

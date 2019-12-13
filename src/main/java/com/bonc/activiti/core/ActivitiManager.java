@@ -4,6 +4,8 @@ import com.bonc.activiti.web.dto.Result;
 import com.bonc.activiti.web.dto.TaskDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @Description:
  * @Author: ZhangHong
@@ -26,4 +28,6 @@ public interface ActivitiManager {
      * @Return: com.bonc.activiti.web.dto.Result
      */
     Result getTask(String userId, Integer page, Integer size);
+
+    Result completeTask(String taskId, String note, HttpServletRequest request);
 }

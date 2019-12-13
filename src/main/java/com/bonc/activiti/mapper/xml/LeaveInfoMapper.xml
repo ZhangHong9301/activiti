@@ -4,7 +4,13 @@
 
     <insert id="addLeaveInfo" parameterType="LeaveInfo">
         INSERT INTO aud_leave_info (id, user_id, instance_id, start_time, end_time, reason)
-        VALUES (#{id},#{userId},#{instanceId},#{startTime},#{endTime},#{reason})
+        VALUES (#{id}, #{userId}, #{instanceId}, #{startTime}, #{endTime}, #{reason})
     </insert>
+
+    <select id="getLeaveInfo" parameterType="String" resultType="LeaveConverter">
+        SELECT *
+        FROM aud_leave_info
+        WHERE id = #{id}
+    </select>
 
 </mapper>

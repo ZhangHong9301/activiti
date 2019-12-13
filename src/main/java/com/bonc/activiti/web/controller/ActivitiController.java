@@ -4,9 +4,9 @@ import com.bonc.activiti.core.ActivitiManager;
 import com.bonc.activiti.web.dto.Result;
 import com.bonc.activiti.web.dto.TaskDto;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +42,7 @@ public class ActivitiController {
     }
 
     @PostMapping("/task")
-    @ApiOperation(value = "代办任务")
+    @ApiOperation(value = "待办任务")
     public Result getTask(Integer page, Integer size, HttpServletRequest request) {
         // 获取用户信息
         // 校验用户权限
@@ -50,4 +50,13 @@ public class ActivitiController {
         return activitiManager.getTask(userId, page, size);
     }
 
+    @PostMapping("/task/{taskId}")
+    @ApiOperation(value = "完成任务")
+    public Result completeTask(@PathVariable String taskId, String note, HttpServletRequest request) {
+        return activitiManager.completeTask(taskId, note, request);
+    }
+
+    //查看历史
+    //查看历史申请
+    //查看历史审批
 }
