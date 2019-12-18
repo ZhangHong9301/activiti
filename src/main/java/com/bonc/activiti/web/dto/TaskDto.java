@@ -20,4 +20,7 @@ public class TaskDto {
 
     @ApiModelProperty(value = "请假原由")
     private String reason;
+
+    @ApiModelProperty(value = "请假人", example = "zhanghong")
+    private String userId;
 }

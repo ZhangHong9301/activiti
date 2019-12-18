@@ -114,6 +114,18 @@ act_hi_taskinst 已经执行完的历史任务信息
 关于流程变量类型说明：
 流程变量类型除了基本类型还有Serializable,用Javabean类型设置流程变量时，需要这个Javabean实现Serializable接口
 
+总结
+
+分配个人任务三种方式
+  *直接给值，在xxx.bpmn文件中指定
+  *流程变量${流程变量名称}或者#{}
+  *使用类监听这个类（实现一个接口），指定任务的办理人（setAssgnee()）
+
+个人任务与组任务
+  *都是用TaskService完成
+  *个人任务(taskAssgnee),组任务(taskCandidateUser)
+
+
 */
 ######################################################
 
@@ -128,7 +140,7 @@ FROM aud_leave_info;
 # Parameters: D0BEF5DF93AC41F89C9BA7B612DEB92E(String)
 SELECT *
 FROM aud_leave_info
-WHERE id = 'D0BEF5DF93AC41F89C9BA7B612DEB92E'
+WHERE id = 'D0BEF5DF93AC41F89C9BA7B612DEB92E';
 
 
 

@@ -4,14 +4,13 @@ import com.bonc.activiti.entity.LeaveInfo;
 import com.bonc.activiti.entity.LeaveConverter;
 import com.bonc.activiti.mapper.LeaveInfoMapper;
 import com.bonc.activiti.util.UUIDUtil;
+import com.bonc.activiti.web.dto.CompleteTaskDto;
 import com.bonc.activiti.web.dto.Result;
 import com.bonc.activiti.web.dto.TaskDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.activiti.engine.IdentityService;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
+import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
@@ -51,6 +50,9 @@ public class ActivitiManagerImpl implements ActivitiManager {
     private TaskService taskService;
 
     @Autowired
+    private HistoryService historyService;
+
+    @Autowired
     private LeaveInfoMapper leaveInfoMapper;
 
     @Autowired
@@ -72,19 +74,19 @@ public class ActivitiManagerImpl implements ActivitiManager {
     }
 
     @Override
-    public Result processStart(TaskDto taskDto, String userId) {
+    public Result processStart(TaskDto taskDto) {
         LeaveInfo leaveInfo = new LeaveInfo();
         String uuid = UUIDUtil.createUUID();
         leaveInfo.setId(uuid);
-        leaveInfo.setUserId(userId);
+        leaveInfo.setUserId(taskDto.getUserId());
         leaveInfo.setStartTime(taskDto.getStartTime());
         leaveInfo.setEndTime(taskDto.getEndTime());
         leaveInfo.setReason(taskDto.getReason());
         // 用请假信息表的主键作为businessKey，连接业务数据和流程数据
         String businessKey = uuid;
         Map<String, Object> variables = new HashMap<>();
-        variables.put("applyUserId", userId);
-        identityService.setAuthenticatedUserId(userId);
+        variables.put("applyUserId", taskDto.getUserId());
+        identityService.setAuthenticatedUserId(taskDto.getUserId());
         ProcessInstance instance =
                 runtimeService.startProcessInstanceByKey("leave", businessKey, variables);
         LOGGER.info("流程 [{}] 已启动", instance.getId());
@@ -140,7 +142,36 @@ public class ActivitiManagerImpl implements ActivitiManager {
     }
 
     @Override
-    public Result completeTask(String taskId, String note, HttpServletRequest request) {
-        return null;
+    public Result completeTask(CompleteTaskDto dto, HttpServletRequest request) {
+        taskService.claim(dto.getTaskId(), dto.getUserId());
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("deptleaderapprove", dto.getIsTrue());
+        taskService.complete(dto.getTaskId(), variables);
+        return Result.success();
+    }
+
+    /**
+     * @param userId
+     * @param page
+     * @param size
+     * @description: 历史任务查询
+     * @param: [userId]
+     * @Return: com.bonc.activiti.web.dto.Result
+     */
+    @Override
+    public Result historyTask(String userId, Integer page, Integer size) {
+        List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+                .taskInvolvedUser(userId)
+                .finished()
+                .listPage(page, size);
+        for (HistoricTaskInstance ins : historicTaskInstances) {
+            LOGGER.info("流程实例ID: [{}]", ins.getProcessInstanceId());
+            LOGGER.info("任务ID: [{}]", ins.getId());
+            LOGGER.info("任务名称: [{}]", ins.getName());
+            LOGGER.info("办理人: [{}]", ins.getAssignee());
+            LOGGER.info("开始时间: [{}]", ins.getStartTime());
+            LOGGER.info("结束时间: [{}]", ins.getEndTime());
+        }
+        return Result.success();
     }
 }
