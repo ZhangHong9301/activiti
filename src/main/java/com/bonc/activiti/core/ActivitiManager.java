@@ -2,6 +2,7 @@ package com.bonc.activiti.core;
 
 import com.bonc.activiti.web.dto.CompleteTaskDto;
 import com.bonc.activiti.web.dto.Result;
+import com.bonc.activiti.web.dto.RuntimeTaskDto;
 import com.bonc.activiti.web.dto.TaskDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ public interface ActivitiManager {
 
     /**
      * @description: 启动流程
-     * @param: [taskDto, userId]  
+     * @param: [taskDto, userId]
      * @Return: com.bonc.activiti.web.dto.Result
      */
     Result processStart(TaskDto taskDto);
@@ -28,13 +29,13 @@ public interface ActivitiManager {
      * @param: [userId, page, size]
      * @Return: com.bonc.activiti.web.dto.Result
      */
-    Result getTask(String userId, Integer page, Integer size);
+    Result getTask(RuntimeTaskDto dto);
 
     Result completeTask(CompleteTaskDto dto, HttpServletRequest request);
 
     /**
      * @description: 历史任务查询
-     * @param: [userId]  
+     * @param: [userId]
      * @Return: com.bonc.activiti.web.dto.Result
      */
     Result historyTask(String userId, Integer page, Integer size);

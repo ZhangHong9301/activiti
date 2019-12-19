@@ -6,6 +6,7 @@ import com.bonc.activiti.mapper.LeaveInfoMapper;
 import com.bonc.activiti.util.UUIDUtil;
 import com.bonc.activiti.web.dto.CompleteTaskDto;
 import com.bonc.activiti.web.dto.Result;
+import com.bonc.activiti.web.dto.RuntimeTaskDto;
 import com.bonc.activiti.web.dto.TaskDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +65,9 @@ public class ActivitiManagerImpl implements ActivitiManager {
         String filename = file.getOriginalFilename();
         try {
             InputStream inputStream = file.getInputStream();
-            repositoryService.createDeployment().addInputStream(filename, inputStream).deploy();
+            repositoryService.createDeployment()
+                    .addInputStream(filename, inputStream)
+                    .deploy();
             LOGGER.info("deploy end");
             return Result.success();
         } catch (IOException e) {
@@ -85,35 +88,51 @@ public class ActivitiManagerImpl implements ActivitiManager {
         // 用请假信息表的主键作为businessKey，连接业务数据和流程数据
         String businessKey = uuid;
         Map<String, Object> variables = new HashMap<>();
-        variables.put("applyUserId", taskDto.getUserId());
+        variables.put(taskDto.getVariableName(), taskDto.getUserId());
         identityService.setAuthenticatedUserId(taskDto.getUserId());
         ProcessInstance instance =
-                runtimeService.startProcessInstanceByKey("leave", businessKey, variables);
+                runtimeService.startProcessInstanceByKey(taskDto.getProcessDefinitionKey(), businessKey);
         LOGGER.info("流程 [{}] 已启动", instance.getId());
         leaveInfo.setInstanceId(instance.getId());
         leaveInfoMapper.addLeaveInfo(leaveInfo);
+
+        /*指定下一个任务办理人*/
+        //TODO 指定下一个任务办理人
+        // taskService.setAssignee(,taskDto.getUserId());
+
         return Result.success();
     }
 
     /**
-     * @param userId
-     * @param page
-     * @param size
      * @description: 获取代办任务
      * @param: [userId, page, size]
      * @Return: com.bonc.activiti.web.dto.Result
      */
     @Override
-    public Result getTask(String userId, Integer page, Integer size) {
+    public Result getTask(RuntimeTaskDto dto) {
+
+        // 获取用户信息
+        // 校验用户权限
+
         List<LeaveConverter> res = new ArrayList<>();
         List<LeaveInfo> leaveInfos = new ArrayList<>();
         List<Task> tasks = taskService.createTaskQuery()
-                .taskCandidateGroup("部门经理").listPage(page, size);
+                /*查询条件*/
+                /*指定任务组*/
+                // .taskCandidateGroup(dto.getCandidateGroup())
+                /*指定办理人*/
+                .taskAssignee(dto.getAssignee())
+                /*使用创建时间的升序排列*/
+                .orderByTaskCreateTime().asc()
+                /*返回结果集*/
+                /*分页*/
+                .listPage(dto.getPage(), dto.getSize());
         for (Task task : tasks) {
             String processInstanceId = task.getProcessInstanceId();
             LOGGER.info("processInstanceId [{}]", processInstanceId);
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-                    .processInstanceId(processInstanceId).singleResult();
+                    .processInstanceId(processInstanceId)
+                    .singleResult();
             String businessKey = instance.getBusinessKey();
             LeaveConverter lea = leaveInfoMapper.getLeaveInfo(businessKey);
             try {
@@ -145,8 +164,11 @@ public class ActivitiManagerImpl implements ActivitiManager {
     public Result completeTask(CompleteTaskDto dto, HttpServletRequest request) {
         taskService.claim(dto.getTaskId(), dto.getUserId());
         Map<String, Object> variables = new HashMap<>();
-        variables.put("deptleaderapprove", dto.getIsTrue());
+        variables.put(dto.getVariablesName(), dto.getIsTrue());
+
         taskService.complete(dto.getTaskId(), variables);
+        //TODO 指定下一个用户任务办理人
+        // taskService.setAssignee();
         return Result.success();
     }
 

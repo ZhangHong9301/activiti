@@ -3,6 +3,7 @@ package com.bonc.activiti.web.controller;
 import com.bonc.activiti.core.ActivitiManager;
 import com.bonc.activiti.web.dto.CompleteTaskDto;
 import com.bonc.activiti.web.dto.Result;
+import com.bonc.activiti.web.dto.RuntimeTaskDto;
 import com.bonc.activiti.web.dto.TaskDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,11 +41,9 @@ public class ActivitiController {
 
     @PostMapping("/task")
     @ApiOperation(value = "待办任务")
-    public Result getTask(Integer page, Integer size, HttpServletRequest request) {
-        // 获取用户信息
-        // 校验用户权限
-        String userId = "zhanghong";
-        return activitiManager.getTask(userId, page, size);
+    public Result getTask(RuntimeTaskDto dto, HttpServletRequest request) {
+
+        return activitiManager.getTask(dto);
     }
 
     @PostMapping("/task/task-id")

@@ -1,70 +1,3 @@
-## 部署对象和流程定义相关表
-# 部署信息表
-SELECT *
-FROM act_re_deployment;
-
-# 流程设计模型部署表
-SELECT *
-FROM act_re_model;
-
-# 流程定义表
-SELECT *
-FROM act_re_procdef;
-
-# 资源文件表
-SELECT *
-FROM act_ge_bytearray;
-
-SELECT *
-FROM act_ge_property;
-
-###################################################
-## 流程实例、执行对象、任务相关表
-# 运行时执行对象表
-SELECT *
-FROM act_ru_execution;
-
-# 历史流程实例表
-SELECT *
-FROM act_hi_procinst;
-
-# 运行时任务表   
-SELECT *
-FROM act_ru_task;
-
-# 历史任务表
-SELECT *
-FROM act_hi_taskinst;
-
-###################################################
-## 流程变量
-# 运行时流程变量表
-SELECT *
-FROM act_ru_variable;
-
-# 历史流程变量表
-SELECT *
-FROM act_hi_varinst;
-
-###################################################
-## 组织机构表
-# 用户组表
-SELECT *
-FROM act_id_group;
-# 用户扩展表
-SELECT *
-FROM act_id_info;
-# 用户与用户组对应表
-SELECT *
-FROM act_id_membership;
-# 用户表
-SELECT *
-FROM act_id_user;
-
-# 历史所有活动节点表
-SELECT *
-FROM act_hi_actinst;
-
 ##################################################
 /*
 Deployment 部署对象
@@ -130,38 +63,100 @@ act_hi_taskinst 已经执行完的历史任务信息
 ######################################################
 
 
+## 部署对象和流程定义相关表
+# 部署信息表
+SELECT *
+FROM act_re_deployment;
 
+# 流程设计模型部署表
+SELECT *
+FROM act_re_model;
 
+# 流程定义表
+SELECT *
+FROM act_re_procdef;
 
+# 资源文件表
+SELECT *
+FROM act_ge_bytearray;
 
 SELECT *
-FROM aud_leave_info;
+FROM act_ge_property;
 
-# Parameters: D0BEF5DF93AC41F89C9BA7B612DEB92E(String)
+###################################################
+## 流程实例、执行对象、任务相关表
+# 运行时执行对象表
 SELECT *
-FROM aud_leave_info
-WHERE id = 'D0BEF5DF93AC41F89C9BA7B612DEB92E';
+FROM act_ru_execution;
 
+# 历史流程实例表
+SELECT *
+FROM act_hi_procinst;
 
-
-# Parameters: 部门经理(String), 10(Integer), 0(Integer)
-SELECT DISTINCT RES.*
-FROM ACT_RU_TASK RES INNER JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_ = RES.ID_
-WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND (I.GROUP_ID_ IN ('部门经理'))
-ORDER BY RES.ID_ ASC
-LIMIT 10 OFFSET 0;
+# 运行时任务表   
+SELECT *
+FROM act_ru_task;
 
 SELECT *
 FROM ACT_RU_IDENTITYLINK;
 
-SELECT unix_timestamp(now());
+# 历史任务实例表
+SELECT *
+FROM act_hi_taskinst;
 
-# 获取毫秒级时间戳
-SELECT unix_timestamp(current_timestamp(3));
+SELECT *
+FROM ACT_HI_IDENTITYLINK;
 
-SELECT REPLACE(unix_timestamp(current_timestamp(3)), '.', '');
 
-SELECT current_timestamp(3);
+###################################################
+## 流程变量
+# 运行时流程变量表
+SELECT *
+FROM act_ru_variable;
 
-SELECT now();
+# 历史流程变量表
+SELECT *
+FROM act_hi_varinst;
 
+###################################################
+## 组织机构表
+# 用户组表
+SELECT *
+FROM act_id_group;
+# 用户扩展表
+SELECT *
+FROM act_id_info;
+# 用户与用户组对应表
+SELECT *
+FROM act_id_membership;
+# 用户表
+SELECT *
+FROM act_id_user;
+
+# 历史所有活动节点表
+SELECT *
+FROM act_hi_actinst;
+
+# 待办任务查询
+# 表：ACT_RU_TASK
+# ACT_RU_IDENTITYLINK
+# Parameters: 部门经理(String), 10(Integer), 0(Integer)
+SELECT DISTINCT RES.*
+FROM ACT_RU_TASK RES INNER JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_ = RES.ID_
+WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND (I.GROUP_ID_ IN ('人事'))
+ORDER BY RES.ID_ ASC
+LIMIT 10 OFFSET 0;
+
+#历史任务实例查询
+SET @userId = '蛮大人';
+SELECT DISTINCT RES.*
+FROM ACT_HI_TASKINST RES
+WHERE RES.END_TIME_ IS NOT NULL AND (exists(SELECT LINK.USER_ID_
+                                            FROM ACT_HI_IDENTITYLINK LINK
+                                            WHERE USER_ID_ = @userId AND LINK.TASK_ID_ = RES.ID_) OR
+                                     RES.ASSIGNEE_ = @userId OR
+                                     RES.OWNER_ = @user)
+ORDER BY RES.ID_ ASC
+LIMIT 10 OFFSET 0
+
+# 流程追踪
