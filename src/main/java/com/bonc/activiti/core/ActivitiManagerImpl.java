@@ -1,5 +1,6 @@
 package com.bonc.activiti.core;
 
+import com.bonc.activiti.entity.ActConstant;
 import com.bonc.activiti.entity.LeaveInfo;
 import com.bonc.activiti.entity.LeaveConverter;
 import com.bonc.activiti.mapper.LeaveInfoMapper;
@@ -13,7 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,18 +91,26 @@ public class ActivitiManagerImpl implements ActivitiManager {
         // 用请假信息表的主键作为businessKey，连接业务数据和流程数据
         String businessKey = uuid;
         Map<String, Object> variables = new HashMap<>();
-        variables.put(taskDto.getVariableName(), taskDto.getUserId());
+        variables.put(ActConstant.APPLICANT, taskDto.getUserId());
+        // 设置发起人
         identityService.setAuthenticatedUserId(taskDto.getUserId());
+        // 启动一个流程实例
         ProcessInstance instance =
-                runtimeService.startProcessInstanceByKey(taskDto.getProcessDefinitionKey(), businessKey);
-        LOGGER.info("流程 [{}] 已启动", instance.getId());
+                runtimeService.startProcessInstanceByKey(taskDto.getProcessDefinitionKey(),
+                        businessKey, variables);
+        LOGGER.info("流程 {} 已启动", instance.getId());
+
         leaveInfo.setInstanceId(instance.getId());
         leaveInfoMapper.addLeaveInfo(leaveInfo);
 
-        /*指定下一个任务办理人*/
-        //TODO 指定下一个任务办理人
-        // taskService.setAssignee(,taskDto.getUserId());
+        /*下一个任务*/
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(instance.getId())
+                .singleResult();
 
+        // taskService.setAssignee(task.getId(), taskDto.getUserId());
+        LOGGER.info("当前流程实例: {} 任务: {} 执行人: {}", instance.getId(),
+                task.getId(), task.getAssignee());
         return Result.success();
     }
 
@@ -129,14 +140,14 @@ public class ActivitiManagerImpl implements ActivitiManager {
                 .listPage(dto.getPage(), dto.getSize());
         for (Task task : tasks) {
             String processInstanceId = task.getProcessInstanceId();
-            LOGGER.info("processInstanceId [{}]", processInstanceId);
+            LOGGER.info("processInstanceId {}", processInstanceId);
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(processInstanceId)
                     .singleResult();
             String businessKey = instance.getBusinessKey();
             LeaveConverter lea = leaveInfoMapper.getLeaveInfo(businessKey);
             try {
-                LOGGER.info("请假信息：[{}]", objectMapper.writeValueAsString(lea));
+                LOGGER.info("请假信息：{}", objectMapper.writeValueAsString(lea));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -162,13 +173,39 @@ public class ActivitiManagerImpl implements ActivitiManager {
 
     @Override
     public Result completeTask(CompleteTaskDto dto, HttpServletRequest request) {
-        taskService.claim(dto.getTaskId(), dto.getUserId());
-        Map<String, Object> variables = new HashMap<>();
-        variables.put(dto.getVariablesName(), dto.getIsTrue());
 
-        taskService.complete(dto.getTaskId(), variables);
-        //TODO 指定下一个用户任务办理人
-        // taskService.setAssignee();
+        LOGGER.info("Completing task start ...");
+        // taskService.claim(dto.getTaskId(), dto.getUserId());
+        Task task = taskService.createTaskQuery()
+                .processInstanceId(dto.getProcessInstanceId())
+                .singleResult();
+        String assignee = task.getAssignee();
+        LOGGER.info("当前任务执行人是: {}", assignee);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("", dto.getIsTrue());
+        variables.put(ActConstant.MANAGER, dto.getIsTrue());
+
+        taskService.complete(task.getId(), variables);
+
+        LOGGER.info("Completing task end.");
+
+        Task nextTask = taskService.createTaskQuery().
+                processInstanceId(dto.getProcessInstanceId()).
+                singleResult();
+        if (runtimeService.createProcessInstanceQuery()
+                .processInstanceId(dto.getProcessInstanceId())
+                .singleResult() != null) {
+            if (dto.getIsTrue().equals("true")) {
+                taskService.setAssignee(nextTask.getId(), dto.getUserId());
+            }
+            String nextTaskAssignee = taskService.createTaskQuery().
+                    processInstanceId(dto.getProcessInstanceId()).
+                    singleResult().getAssignee();
+            LOGGER.info("下一任务执行人是: {}", nextTaskAssignee);
+        } else {
+            LOGGER.info("流程: {} 已结束", dto.getProcessInstanceId());
+        }
         return Result.success();
     }
 
@@ -190,7 +227,7 @@ public class ActivitiManagerImpl implements ActivitiManager {
             LOGGER.info("流程实例ID: [{}]", ins.getProcessInstanceId());
             LOGGER.info("任务ID: [{}]", ins.getId());
             LOGGER.info("任务名称: [{}]", ins.getName());
-            LOGGER.info("办理人: [{}]", ins.getAssignee());
+            LOGGER.info("任务执行人: [{}]", ins.getAssignee());
             LOGGER.info("开始时间: [{}]", ins.getStartTime());
             LOGGER.info("结束时间: [{}]", ins.getEndTime());
         }

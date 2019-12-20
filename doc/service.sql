@@ -85,13 +85,13 @@ FROM act_ge_property;
 
 ###################################################
 ## 流程实例、执行对象、任务相关表
-# 运行时执行对象表
-SELECT *
-FROM act_ru_execution;
-
 # 历史流程实例表
 SELECT *
 FROM act_hi_procinst;
+
+# 运行时执行对象表
+SELECT *
+FROM act_ru_execution;
 
 # 运行时任务表   
 SELECT *
@@ -147,7 +147,7 @@ WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' AND (I.GROUP_ID_ IN ('人�
 ORDER BY RES.ID_ ASC
 LIMIT 10 OFFSET 0;
 
-#历史任务实例查询
+# 历史任务实例查询
 SET @userId = '蛮大人';
 SELECT DISTINCT RES.*
 FROM ACT_HI_TASKINST RES
@@ -160,3 +160,6 @@ ORDER BY RES.ID_ ASC
 LIMIT 10 OFFSET 0
 
 # 流程追踪
+
+
+

@@ -11,16 +11,19 @@ import lombok.Data;
 @Data
 public class CompleteTaskDto {
 
-    @ApiModelProperty(value = "审批人", example = "蛮大人")
+    @ApiModelProperty(value = "下一任务办理人", example = "蛮大人")
     private String userId;
 
-    @ApiModelProperty(value = "变量名称，deptleaderapprove，hrapprove,reapply(销假),isSubmission,isAgree", example = "deptleaderapprove")
-    private String variablesName;
+    // @ApiModelProperty(value = "变量名称，deptleaderapprove，hrapprove,reapply(销假),isSubmission,isAgree", example = "deptleaderapprove")
+    // private String condition;
 
-    @ApiModelProperty(value = "任务id")
-    private String taskId;
+    // @ApiModelProperty(value = "任务id")
+    // private String taskId;
 
-    @ApiModelProperty(value = "是否通过,true/false", example = "true")
+    @ApiModelProperty(value = "条件,true/false", example = "true")
     private String isTrue;
+
+    @ApiModelProperty(value = "流程实例id")
+    private String processInstanceId;
 
 }

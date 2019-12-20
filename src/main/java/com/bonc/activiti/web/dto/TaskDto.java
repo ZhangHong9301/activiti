@@ -24,8 +24,8 @@ public class TaskDto {
     @ApiModelProperty(value = "请假人", example = "zhanghong")
     private String userId;
 
-    @ApiModelProperty(value = "变量名称,applyuserid,userId", example = "userId")
-    private String variableName;
+    // @ApiModelProperty(value = "变量名称,applicant,userId", example = "applicant")
+    // private String variableName;
 
     @ApiModelProperty(value = "流程定义键")
     private String processDefinitionKey;
