@@ -16,4 +16,6 @@ public interface LeaveInfoMapper {
     void addLeaveInfo(LeaveInfo leaveInfo);
 
     LeaveConverter getLeaveInfo(String id);
+
+    void updateLeaveInfo(LeaveInfo leaveInfo);
 }

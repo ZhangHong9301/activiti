@@ -183,7 +183,7 @@ public class ActivitiManagerImpl implements ActivitiManager {
         LOGGER.info("当前任务执行人是: {}", assignee);
 
         Map<String, Object> variables = new HashMap<>();
-        variables.put("", dto.getIsTrue());
+        variables.put(ActConstant.ISSUBMISSION, dto.getIsTrue());
         variables.put(ActConstant.MANAGER, dto.getIsTrue());
 
         taskService.complete(task.getId(), variables);

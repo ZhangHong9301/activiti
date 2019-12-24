@@ -14,7 +14,27 @@ public interface ActConstant {
     String APPLICANT = "applicant";
 
     /**
+     * 员工是否提交申请变量名称，1 通过， 0 拒绝
+     */
+    String ISSUBMISSION = "isSubmission";
+
+    /**
      * 经理审批执行人变量名称
      */
     String MANAGER = "manager";
+
+    /**
+     * 经理审批条件名称
+     */
+    String ISAGREEMANA = "isAgreeMana";
+
+    /**
+     * 人事审批执行人变量名称
+     */
+    String HR = "hr";
+
+    /**
+     * 人事审批条件名称
+     */
+    String ISAGREEHR = "isAgreeHr";
 }
