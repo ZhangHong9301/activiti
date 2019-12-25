@@ -2,6 +2,7 @@ package com.bonc.activiti.web.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @Description:
@@ -9,6 +10,7 @@ import lombok.Data;
  * @Date: 2019-12-18 16:56
  */
 @Data
+@Accessors(chain = true)
 public class CompleteTaskDto {
 
     @ApiModelProperty(value = "下一任务办理人", example = "蛮大人")

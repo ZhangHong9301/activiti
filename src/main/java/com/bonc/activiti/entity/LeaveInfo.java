@@ -2,6 +2,7 @@ package com.bonc.activiti.entity;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -11,6 +12,7 @@ import java.util.Date;
  * @Date: 2019-12-06 16:27
  */
 @Data
+@Accessors(chain = true)
 public class LeaveInfo {
 
     @ApiModelProperty(value = "主键")

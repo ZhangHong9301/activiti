@@ -87,14 +87,14 @@ public class ActLeaveTaskManageImpl implements ActLeaveTaskManage {
                 .singleResult();
         String businessKey = instance.getBusinessKey();
         LeaveInfo leaveInfo = new LeaveInfo();
-        leaveInfo.setId(businessKey);
-        leaveInfo.setInstanceId(dto.getProcessInstanceId());
-        leaveInfo.setTaskId(task.getId());
-        leaveInfo.setTaskName(task.getName());
-        leaveInfo.setUserId(task.getAssignee());
-        leaveInfo.setStartTime(dto.getStartTime());
-        leaveInfo.setEndTime(dto.getEndTime());
-        leaveInfo.setReason(dto.getReason());
+        leaveInfo.setId(businessKey)
+                .setInstanceId(dto.getProcessInstanceId())
+                .setTaskId(task.getId())
+                .setTaskName(task.getName())
+                .setUserId(task.getAssignee())
+                .setStartTime(dto.getStartTime())
+                .setEndTime(dto.getEndTime())
+                .setReason(dto.getReason());
         // 第一次提交时，新增一条记录；请假申请被打回时，更新之前的记录
         LeaveConverter c = leaveInfoMapper.getLeaveInfo(businessKey);
         if (c == null) {
