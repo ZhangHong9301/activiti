@@ -12,4 +12,6 @@ public interface ProjectManageService {
     Object getProject() throws JsonProcessingException;
 
     String getString(MultipartFile file);
+
+    long getUid();
 }

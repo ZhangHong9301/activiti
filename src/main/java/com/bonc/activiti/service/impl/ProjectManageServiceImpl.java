@@ -3,6 +3,7 @@ package com.bonc.activiti.service.impl;
 import com.bonc.activiti.entity.AudFinalAccount;
 import com.bonc.activiti.mapper.ProjectManageMapper;
 import com.bonc.activiti.service.ProjectManageService;
+import com.bonc.activiti.uid.UidGenerator;
 import com.bonc.activiti.util.UUIDUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -31,6 +32,9 @@ public class ProjectManageServiceImpl implements ProjectManageService {
 
     @Autowired
     private ProjectManageMapper projectManageMapper;
+
+    @Autowired
+    private UidGenerator uidGenerator;
 
     @Override
     public String importProject(MultipartFile file) throws IOException {
@@ -100,7 +104,7 @@ public class ProjectManageServiceImpl implements ProjectManageService {
                                 if (information.getProjectYear() == null || information.getProjectYear().isEmpty()) {
                                     throw new RuntimeException("第" + spanNum + "行项目年份不能为空");
                                 }
-                                if (!Pattern.matches("^[2-9]\\d{3}$",information.getProjectYear())) {
+                                if (!Pattern.matches("^[2-9]\\d{3}$", information.getProjectYear())) {
                                     throw new RuntimeException("第" + spanNum + "行项目年份数据不符合规范");
                                 }
                                 break;
@@ -202,5 +206,12 @@ public class ProjectManageServiceImpl implements ProjectManageService {
             e.printStackTrace();
             return "上传单个文件失败";
         }
+    }
+
+    @Override
+    public long getUid() {
+        long uid = uidGenerator.getUID();
+        logger.info("ProjectManageServiceImpl UID : {}", uid);
+        return uid;
     }
 }

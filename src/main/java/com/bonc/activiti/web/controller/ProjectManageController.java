@@ -29,7 +29,7 @@ public class ProjectManageController {
         logger.info("进入导入接口");
 //        return "lllll" + file.getOriginalFilename();
 //         return projectManageService.getString(file);
-               return projectManageService.importProject(file);
+        return projectManageService.importProject(file);
     }
 
 
@@ -44,5 +44,10 @@ public class ProjectManageController {
         return "It's " + fileName + " , fileName : " + type + "";
     }
 
+    @PostMapping("/uid")
+    @ApiOperation(value = "全局id")
+    public String uid() {
+        return String.valueOf(projectManageService.getUid());
+    }
 
 }
