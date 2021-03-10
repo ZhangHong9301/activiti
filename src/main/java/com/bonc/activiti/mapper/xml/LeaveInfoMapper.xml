@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bonc.activiti.mapper.LeaveInfoMapper">
 
-    <insert id="addLeaveInfo" parameterType="LeaveInfo">
+    <insert id="addLeaveInfo" parameterType="com.bonc.activiti.entity.LeaveInfo">
         INSERT INTO aud_leave_info (id, user_id, instance_id, start_time, end_time, reason)
         VALUES (#{id}, #{userId}, #{instanceId}, #{startTime}, #{endTime}, #{reason})
     </insert>
 
-    <select id="getLeaveInfo" parameterType="String" resultType="LeaveConverter">
+    <select id="getLeaveInfo" parameterType="String" resultType="com.bonc.activiti.entity.LeaveConverter">
         SELECT *
         FROM aud_leave_info
         WHERE id = #{id}

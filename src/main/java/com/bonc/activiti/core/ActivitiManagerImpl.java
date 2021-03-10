@@ -1,8 +1,8 @@
 package com.bonc.activiti.core;
 
 import com.bonc.activiti.entity.ActConstant;
-import com.bonc.activiti.entity.LeaveInfo;
 import com.bonc.activiti.entity.LeaveConverter;
+import com.bonc.activiti.entity.LeaveInfo;
 import com.bonc.activiti.mapper.LeaveInfoMapper;
 import com.bonc.activiti.util.UUIDUtil;
 import com.bonc.activiti.web.dto.CompleteTaskDto;

@@ -19,11 +19,14 @@ import com.bonc.activiti.uid.BitsAllocator;
 import com.bonc.activiti.uid.UidGenerator;
 import com.bonc.activiti.uid.exception.UidGenerateException;
 import com.bonc.activiti.uid.utils.DateUtils;
+import com.bonc.activiti.uid.worker.DisposableWorkerIdAssigner;
 import com.bonc.activiti.uid.worker.WorkerIdAssigner;
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

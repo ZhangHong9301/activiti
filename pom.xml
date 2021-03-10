@@ -17,7 +17,8 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <activiti.version>6.0.0</activiti.version>
+        <!--<activiti.version>6.0.0</activiti.version>-->
+        <activiti.version>5.23.0</activiti.version>
         <activiti.rest.version>5.23.0</activiti.rest.version>
     </properties>
 
@@ -50,7 +51,7 @@
         <!--官方画图工具的集成 start-->
         <!--注：如果权限组件没有集成spring-security，需要排除相关引用-->
         <!-- https://mvnrepository.com/artifact/org.activiti/activiti-diagram-rest -->
-        <!--<dependency>
+        <dependency>
             <groupId>org.activiti</groupId>
             <artifactId>activiti-diagram-rest</artifactId>
             <version>${activiti.rest.version}</version>
@@ -69,7 +70,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.activiti/activiti-modeler &ndash;&gt;
+        <!-- https://mvnrepository.com/artifact/org.activiti/activiti-modeler -->
         <dependency>
             <groupId>org.activiti</groupId>
             <artifactId>activiti-modeler</artifactId>
@@ -88,7 +89,7 @@
                     <artifactId>spring-security-web</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
 
         <!--官方画图工具的集成 end-->
 
@@ -135,7 +136,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.1.1</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>

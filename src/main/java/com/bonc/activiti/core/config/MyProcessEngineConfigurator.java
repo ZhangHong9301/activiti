@@ -1,6 +1,8 @@
 package com.bonc.activiti.core.config;
 
 import com.bonc.activiti.core.UUIDGenerator;
+import com.bonc.activiti.uid.UidGenerator;
+import com.bonc.activiti.uid.impl.DefaultUidGenerator;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,8 @@ public class MyProcessEngineConfigurator {
 
     @Autowired
     private UUIDGenerator uuidGenerator;
+
+
 
     @Bean
     public ProcessEngineConfigurationImpl processEngineConfigurationImpl(ProcessEngineConfigurationImpl pro) {
